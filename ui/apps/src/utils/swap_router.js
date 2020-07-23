@@ -105,6 +105,7 @@ class swapRouter {
   get_amounts_out(mids, token_in, amount_in, type) {
     let mid_arr = mids.split("-");
     let quantity_out;
+    let price = 1;
 
     for (let i = 0; i < mid_arr.length; i++) {
       let mid = mid_arr[i];
@@ -118,10 +119,11 @@ class swapRouter {
       amount_in = swap_result.amount_out;
       token_in = swap_result.token_out;
       quantity_out = swap_result.quantity_out;
+      price = swap_result.price * price;
     }
 
     return {
-      amount_in, token_in, quantity_out
+      amount_in, token_in, quantity_out, price
     }
   }
 
@@ -138,6 +140,7 @@ class swapRouter {
     let amount_out;
     let token_out;
     let quantity_out;
+    let price;
 
     if (token_in === tokenA) {
       let reserve_in = parseFloat(market.reserve0) * (10 ** market.sym0.split(",")[0]);
@@ -151,6 +154,8 @@ class swapRouter {
       token_out = tokenB
       quantity_out = (amount_out / (10 ** market.sym1.split(",")[0])).toFixed(market.sym1.split(",")[0]) + " " + market.reserve1.split(" ")[1];
       // console.log("quantity_out:", quantity_out);
+
+      price = reserve_out / reserve_in;
     }
     if (token_in === tokenB) {
       let reserve_in = parseFloat(market.reserve1) * (10 ** market.sym1.split(",")[0]);
@@ -169,12 +174,14 @@ class swapRouter {
         quantity_out = (amount_out / (10 ** market.sym1.split(",")[0])).toFixed(market.sym1.split(",")[0]) + " " + market.reserve1.split(" ")[1];
       }
       // console.log("quantity_out:", quantity_out);
+      price = reserve_out / reserve_in;
     }
 
     return {
       token_out,
       amount_out,
-      quantity_out
+      quantity_out,
+      price
     }
   }
 
